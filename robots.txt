@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /json-worker.js
+Disallow: /SECURITY.md
+
+Sitemap: https://yourdomain.com/sitemap.xml

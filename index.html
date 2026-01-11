@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Free online JSON formatter, validator, and beautifier tool with schema validation">
+    <meta name="keywords" content="json formatter, json validator, json beautifier, json minifier">
+    <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; font-src https://cdnjs.cloudflare.com; img-src 'self' data:; connect-src 'self';">
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <meta http-equiv="X-Frame-Options" content="DENY">
+    <meta name="referrer" content="no-referrer">
+    <title>JSON Formatter & Validator</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
+        integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <noscript>
+        <div
+            style="position:fixed;top:0;left:0;width:100%;height:100%;background:#000;color:#fff;display:flex;align-items:center;justify-content:center;z-index:99999;">
+            <h1>JavaScript is required. Please enable JavaScript to use this application.</h1>
+        </div>
+    </noscript>
+    <div class="container">
+        <div class="header">
+            <div>
+                <h1>
+                    <i class="fas fa-code"></i> JSON Formatter & Validator
+                </h1>
+                <p class="subtitle">Advanced JSON tools with schema validation & more</p>
+            </div>
+            <button id="themeToggle" class="btn btn-blue">
+                <i class="fas fa-moon"></i> Dark
+            </button>
+        </div>
+
+        <div id="status"></div>
+
+        <div class="grid-2">
+            <div class="card">
+                <div class="card-header">
+                    <span><i class="fas fa-edit"></i> Input JSON</span>
+                    <div class="btn-group">
+                        <button onclick="fileInput.click()" class="btn btn-sm btn-purple">
+                            <i class="fas fa-upload"></i> Upload
+                        </button>
+                        <button onclick="formatJSON()" class="btn btn-sm btn-blue">
+                            <i class="fas fa-align-left"></i> Format
+                        </button>
+                        <button onclick="minifyJSON()" class="btn btn-sm btn-blue">
+                            <i class="fas fa-compress"></i> Minify
+                        </button>
+                        <button onclick="clearInput()" class="btn btn-sm btn-red">
+                            <i class="fas fa-trash"></i> Clear
+                        </button>
+                    </div>
+                </div>
+                <div class="editor-container">
+                    <div id="lineNumbers" class="line-numbers"></div>
+                    <textarea id="jsonInput" placeholder="Paste your JSON here..." spellcheck="false"
+                        autocomplete="off"></textarea>
+                </div>
+                <div class="card-footer">
+                    <span id="cursorPos" class="footer-info">Ln 1, Col 1</span>
+                    <span id="charCount" class="footer-info">0 chars</span>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <span><i class="fas fa-sitemap"></i> Tree View</span>
+                    <div class="btn-group">
+                        <button onclick="copyJSON()" class="btn btn-sm btn-green">
+                            <i class="fas fa-copy"></i> Copy
+                        </button>
+                        <button onclick="downloadJSON()" class="btn btn-sm btn-purple">
+                            <i class="fas fa-download"></i> JSON
+                        </button>
+                        <button onclick="exportModal.style.display='flex'" class="btn btn-sm btn-indigo">
+                            <i class="fas fa-file-export"></i> Export
+                        </button>
+                        <button onclick="expandAll()" class="btn btn-sm btn-gray">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                        <button onclick="collapseAll()" class="btn btn-sm btn-gray">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                    </div>
+                </div>
+                <div id="treeView" class="tree-view"></div>
+                <div class="card-footer">
+                    <span id="treeCharCount" class="footer-info">0 chars</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid-2 mt">
+            <div class="card">
+                <h3 class="card-title">
+                    <i class="fas fa-check-circle"></i> Schema Validator
+                </h3>
+                <textarea id="schemaInput" class="schema-input" placeholder="Paste JSON Schema here (optional)..."
+                    spellcheck="false"></textarea>
+                <button onclick="validateSchema()" class="btn btn-green btn-full">
+                    <i class="fa-solid fa-check"></i> Validate Against Schema
+                </button>
+            </div>
+
+            <div class="card">
+                <h3 class="card-title">
+                    <i class="fas fa-search"></i> JSON Path Query
+                </h3>
+                <input id="jsonPathInput" type="text" class="path-input"
+                    placeholder="e.g., $.address.city or $..hobbies[0]" autocomplete="off" />
+                <button onclick="executeJSONPath()" class="btn btn-blue btn-full">
+                    <i class="fas fa-play"></i> Execute Query
+                </button>
+                <div id="queryResult" class="query-result"></div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <p>Made with ❤️ by <a href="https://github.com/SuvojitDev/" target="_blank" rel="noopener noreferrer">Suvojit
+                Modak</a></p>
+    </footer>
+
+    <input type="file" id="fileInput" accept=".json,application/json" style="display: none;" />
+    <div id="exportModal" class="modal" onclick="if(event.target===this) this.style.display='none'">
+        <div class="modal-content">
+            <h3 class="modal-title">
+                <i class="fas fa-file-export"></i> Export As
+            </h3>
+            <div class="export-grid">
+                <button onclick="exportAs('csv')" class="export-btn btn-emerald">
+                    <i class="fas fa-file-csv"></i>
+                    <div>CSV</div>
+                </button>
+                <button onclick="exportAs('xml')" class="export-btn btn-orange">
+                    <i class="fas fa-file-code"></i>
+                    <div>XML</div>
+                </button>
+                <button onclick="exportAs('yaml')" class="export-btn btn-purple">
+                    <i class="fas fa-file-alt"></i>
+                    <div>YAML</div>
+                </button>
+            </div>
+            <button onclick="exportModal.style.display='none'" class="btn btn-gray btn-full">
+                <i class="fas fa-times"></i> Cancel
+            </button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        // Disable right-click
+        document.addEventListener('contextmenu', e => e.preventDefault());
+        
+        // Disable F12, Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+U
+        document.addEventListener('keydown', e => {
+            if (e.key === 'F12' || 
+                (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) ||
+                (e.ctrlKey && e.key === 'u')) {
+                e.preventDefault();
+            }
+        });
+        
+        // Detect DevTools
+        setInterval(() => {
+            const threshold = 160;
+            if (window.outerWidth - window.innerWidth > threshold || 
+                window.outerHeight - window.innerHeight > threshold) {
+                document.body.innerHTML = '<h1 style="text-align:center;margin-top:20%;">Access Denied</h1>';
+            }
+        }, 1000);
+    </script>
+</body>
+
+</html>

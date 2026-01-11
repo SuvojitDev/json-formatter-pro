@@ -1,0 +1,24 @@
+# Development files
+*.log
+*.tmp
+.DS_Store
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Documentation (optional - remove if you want to include)
+SECURITY.md
+DEPLOYMENT.md
+index-secure.html
+
+# Node modules (if you add build tools later)
+node_modules/
+package-lock.json
+
+# Environment files
+.env
+.env.local
